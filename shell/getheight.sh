@@ -6,6 +6,8 @@ cd $neoclipath
 spawn screen -r neo-cli
 
 expect "neo>"
+expect -re ".*"
+send "show state"
 
 send "\01"
 send "d"
