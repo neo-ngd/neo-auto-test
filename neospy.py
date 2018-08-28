@@ -1,6 +1,7 @@
 import sys
 import os
 import time
+import commands
 from datetime import datetime, timedelta
 sys.path.append('./')
 from config import config
@@ -31,8 +32,14 @@ def getLocalBlockCount():
     return height
 
 def isLocalRunning():
-    result = os.system('ps -ef | grep "./neo-cli" | wc -l')
-    print('[isLocalRunning]', result)
+    (state, output) = commands.getstatusoutput('ps -ef | grep "./neo-cli" | wc -l')
+    if state != 0:
+        height = getLocalBlockCount()
+        if height < 0:
+            return False
+        return True
+    if int(output) <= 2:
+        return False
     return True
 
 def startLocalNode():
@@ -42,11 +49,13 @@ def startLocalNode():
         lastRestartTimestamp = datetime.now()
         return True
     return False
+
 def stopLocalNode():
     result = os.system('./shell/stop.sh')
     if result == 0:
         return True
-    return False
+    os.system('ps -ef | grep "./neo-cli" | awk \'{print $2}\' | xargs kill')
+    return True
 
 def restartRecently():
     if timedelta(minutes=60) < datetime.now() - lastRestartTimestamp:
