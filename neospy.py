@@ -15,8 +15,6 @@ LOCAL_SRV = 'http://localhost:10332'
 lastRestartTimestamp = datetime.now()
 restart_cnt = 0
 
-logging.basicConfig(level=logging.INFO)
-
 def getBestBlockCount():
     maxHeight = -1
     for seed in config['seeds']:
