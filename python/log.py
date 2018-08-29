@@ -1,6 +1,6 @@
 import logging
 
-logging.basicConfig(level=logging.WARNING,
+logging.basicConfig(level=logging.INFO,
                     filename='state.log',
                     filemode='w',
                     format=

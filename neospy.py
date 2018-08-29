@@ -21,9 +21,7 @@ restart_cnt = 0
 def getBestBlockCount():
     maxHeight = -1
     for seed in config['seeds']:
-        logging.info(seed)
         height = neoapi.getCurrentHeight('http://' + seed)
-        logging.info(height)
         if maxHeight < height:
             maxHeight = height
     logging.info('[getBestBlockCount] maxheight: {0}'.format(maxHeight))
@@ -77,7 +75,7 @@ while True:
     if localBlockCount < 0 or bestBlockCount < 0:
         logging.error('[wrongheight] wrong height, localheight: {0}, bestheight: {1}'.format(localBlockCount, bestBlockCount))
         continue
-    if RESTART_THRESHOLD < bestBlockOount - localBlockCount and not restartRecently():
+    if RESTART_THRESHOLD < bestBlockCount - localBlockCount and not restartRecently():
         restart_cnt += 1
         logging.warning('[restart] restarting, restart_cnt: {0}, localheight: {1}, bestheight: {2}'.format(restart_cnt, localBlockCount, bestBlockOount))
         stopLocalNode()
