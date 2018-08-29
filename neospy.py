@@ -73,8 +73,9 @@ while True:
         continue
     time.sleep(5 * 60)
     localBlockCount = getLocalBlockCount()
-    bestBlockOount = getBestBlockCount()
-    if localBlockCount < 0 or bestBlockOount < 0:
+    bestBlockCount = getBestBlockCount()
+    if localBlockCount < 0 or bestBlockCount < 0:
+        logging.error('[wrongheight] wrong height, localheight: {0}, bestheight: {1}'.format(localBlockCount, bestBlockCount))
         continue
     if RESTART_THRESHOLD < bestBlockOount - localBlockCount and not restartRecently():
         restart_cnt += 1
