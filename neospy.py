@@ -9,9 +9,12 @@ sys.path.append('./python/')
 import neoapi
 from log import logging
 
+#how mand blocks behind the best block count
 RESTART_THRESHOLD = 100
-RESTART_RECENTLY = 60
+#avoid restarting within the time after start
+START_RECENTLY = 60
 LOCAL_SRV = 'http://localhost:10332'
+
 lastRestartTimestamp = datetime.now()
 restart_cnt = 0
 
@@ -23,16 +26,20 @@ def getBestBlockCount():
         logging.info(height)
         if maxHeight < height:
             maxHeight = height
+    logging.info('[getBestBlockCount] maxheight: {0}'.format(maxHeight))
     return maxHeight
 
 def getLocalBlockCount():
     height = neoapi.getCurrentHeight(LOCAL_SRV)
+    logging.info('[getLocalBlockCount] localheight: {0}'.format(height))
     return height
 
 def isLocalRunning():
     (state, output) = commands.getstatusoutput('ps -ef | grep "./neo-cli" | wc -l')
+    logging.info('[isLocalRunning] shell command, state: {0}, output: {1}'.format(state, output))
     if state != 0:
         height = getLocalBlockCount()
+        logging.info('[isLocalRunning] command failed, use rpc getblockcount. height: {0}'.format(height))
         if height < 0:
             return False
         return True
@@ -56,7 +63,7 @@ def stopLocalNode():
     return True
 
 def restartRecently():
-    if timedelta(minutes=60) < datetime.now() - lastRestartTimestamp:
+    if timedelta(minutes=START_RECENTLY) < datetime.now() - lastRestartTimestamp:
         return True
     return False
 
@@ -66,9 +73,9 @@ while True:
         continue
     localBlockCount = getLocalBlockCount()
     bestBlockOount = getBestBlockCount()
-    if 100 < bestBlockOount - localBlockCount and not restartRecently():
+    if RESTART_THRESHOLD < bestBlockOount - localBlockCount and not restartRecently():
         restart_cnt += 1
-        logging.warning('[restart] restarting {0}'.format(restart_cnt))
+        logging.warning('[restart] restarting, restart_cnt: {0}, localheight: {1}, bestheight: {2}'.format(restart_cnt, localBlockCount, bestBlockOount))
         stopLocalNode()
         startLocalNode()
     time.sleep(5 * 60)

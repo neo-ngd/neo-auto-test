@@ -16,9 +16,7 @@ def postNode(url, query):
 
 def getCurrentHeight(url):
     try:  
-        logging.info('get block count: ' + url)
         HEIGHT = int(postNode(url, LIB['getblockcount']))
-        logging.info('[getcurrentheight] height: {0}'.format(HEIGHT))
         return HEIGHT
     except:
         return -1
