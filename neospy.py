@@ -17,7 +17,7 @@ START_SILENT = config['startsilent']
 INTERVAL = config['interval']
 LOCAL_SRV = config['localsrv']
 
-lastRestartTimestamp = datetime.now()
+lastRestartTimestamp = datetime.fromtimestamp(0)
 restart_cnt = 0
 
 def getBestBlockCount():
