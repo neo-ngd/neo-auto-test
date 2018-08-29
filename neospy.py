@@ -10,10 +10,12 @@ import neoapi
 from log import logging
 
 #how mand blocks behind the best block count
-RESTART_THRESHOLD = 100
-#avoid restarting within the time after start
-START_RECENTLY = 60
-LOCAL_SRV = 'http://localhost:10332'
+RESTART_THRESHOLD = config['restartthreshold']
+#avoid restarting within the time after start(minute)
+START_SILENT = config['startsilent']
+#check interval(second)
+INTERVAL = config['interval']
+LOCAL_SRV = config['localsrv']
 
 lastRestartTimestamp = datetime.now()
 restart_cnt = 0
@@ -69,7 +71,7 @@ while True:
     if not isLocalRunning():
         startLocalNode()
         continue
-    time.sleep(5 * 60)
+    time.sleep(INTERVAL)
     localBlockCount = getLocalBlockCount()
     bestBlockCount = getBestBlockCount()
     if localBlockCount < 0 or bestBlockCount < 0:
