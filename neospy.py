@@ -71,11 +71,12 @@ while True:
     if not isLocalRunning():
         startLocalNode()
         continue
+    time.sleep(5 * 60)
     localBlockCount = getLocalBlockCount()
     bestBlockOount = getBestBlockCount()
+    if localBlockCount < 0 or bestBlockOount < 0:
+        continue
     if RESTART_THRESHOLD < bestBlockOount - localBlockCount and not restartRecently():
         restart_cnt += 1
         logging.warning('[restart] restarting, restart_cnt: {0}, localheight: {1}, bestheight: {2}'.format(restart_cnt, localBlockCount, bestBlockOount))
         stopLocalNode()
-        startLocalNode()
-    time.sleep(5 * 60)
