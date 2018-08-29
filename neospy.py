@@ -63,7 +63,7 @@ def stopLocalNode():
     return True
 
 def restartRecently():
-    if timedelta(minutes=START_RECENTLY) < datetime.now() - lastRestartTimestamp:
+    if timedelta(minutes=START_SILENT) < datetime.now() - lastRestartTimestamp:
         return True
     return False
 
