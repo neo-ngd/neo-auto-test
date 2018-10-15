@@ -79,5 +79,5 @@ while True:
         continue
     if RESTART_THRESHOLD < bestBlockCount - localBlockCount and not restartRecently():
         restart_cnt += 1
-        logging.warning('[restart] restarting, restart_cnt: {0}, localheight: {1}, bestheight: {2}'.format(restart_cnt, localBlockCount, bestBlockOount))
+        logging.warning('[restart] restarting, restart_cnt: {0}, localheight: {1}, bestheight: {2}'.format(restart_cnt, localBlockCount, bestBlockCount))
         stopLocalNode()
