@@ -1,7 +1,7 @@
 import sys
 import os
 import time
-import commands
+from subprocess import Popen, PIPE
 from datetime import datetime, timedelta
 sys.path.append('./')
 from config import config
@@ -37,7 +37,9 @@ def getLocalBlockCount():
 
 def isLocalRunning():
     #(state, output) = commands.getstatusoutput('ps -ef | grep "./neo-cli" | wc -l')#ps -ef -o pid -o comm | grep neo-cli
-    (state, output) = commands.getstatusoutput('ps -ef -o pid -o comm | grep neo-cli | wc -l')
+    p = Popen('ps -ef -o pid -o comm | grep neo-cli | wc -l', shell=True, stdout=PIPE)
+    output = p.communicate()[0]
+    state = p.returncode
     logging.info('[isLocalRunning] shell command, state: {0}, output: {1}'.format(state, output))
     if state != 0:
         height = getLocalBlockCount()

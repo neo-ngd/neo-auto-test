@@ -1,5 +1,5 @@
 {
-    "neoclipath": "/home/zhangtao/workspace/neo-cli",
+    "neoclipath": "~/neo-cli",
     "interval": 300,
     "restartthreshold": 100,
     "startsilent": 60,
