@@ -39,6 +39,7 @@ def isLocalRunning():
     #(state, output) = commands.getstatusoutput('ps -ef | grep "./neo-cli" | wc -l')#ps -ef -o pid -o comm | grep neo-cli
     p = Popen('ps -ef -o pid -o comm | grep neo-cli | wc -l', shell=True, stdout=PIPE)
     output = p.communicate()[0]
+    output = output.decode('utf-8')
     state = p.returncode
     logging.info('[isLocalRunning] shell command, state: {0}, output: {1}'.format(state, output))
     if state != 0:
