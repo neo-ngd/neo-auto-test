@@ -1,6 +1,6 @@
 {
-    "neoclipath": "/home/zhangtao/workspace/neo-cli",
-    "interval": 300,
+    "neoclipath": "~/neo-cli",
+    "interval": 10,
     "restartthreshold": 100,
     "startsilent": 60,
     "localsrv": "http://localhost:10332",

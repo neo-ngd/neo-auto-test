@@ -1,13 +1,14 @@
 import sys
 import os
 import time
-import commands
+from subprocess import Popen, PIPE
 from datetime import datetime, timedelta
 sys.path.append('./')
 from config import config
 sys.path.append('./python/')
 import neoapi
 from log import logging
+import state
 
 #how mand blocks behind the best block count
 RESTART_THRESHOLD = config['restartthreshold']
@@ -35,7 +36,11 @@ def getLocalBlockCount():
     return height
 
 def isLocalRunning():
-    (state, output) = commands.getstatusoutput('ps -ef | grep "./neo-cli" | wc -l')
+    #(state, output) = commands.getstatusoutput('ps -ef | grep "./neo-cli" | wc -l')#ps -ef -o pid -o comm | grep neo-cli
+    p = Popen('ps -ef -o pid -o comm | grep neo-cli | wc -l', shell=True, stdout=PIPE)
+    output = p.communicate()[0]
+    output = output.decode('utf-8')
+    state = p.returncode
     logging.info('[isLocalRunning] shell command, state: {0}, output: {1}'.format(state, output))
     if state != 0:
         height = getLocalBlockCount()
@@ -43,7 +48,7 @@ def isLocalRunning():
         if height < 0:
             return False
         return True
-    if int(output) <= 2:
+    if int(output) < 1:
         return False
     return True
 
@@ -59,7 +64,7 @@ def stopLocalNode():
     result = os.system('./shell/stop.sh')
     if result == 0:
         return True
-    os.system('ps -ef | grep "./neo-cli" | awk \'{print $2}\' | xargs kill')
+    os.system('ps -ef -o pid -o comm | grep neo-cli | awk \'{print $1}\'| xargs kill')
     return True
 
 def restartRecently():
@@ -70,8 +75,13 @@ def restartRecently():
 while True:
     if not isLocalRunning():
         startLocalNode()
-        continue
+
     time.sleep(INTERVAL)
+    #get rss
+    mem = state.getRss()
+    if 0 < mem:
+        logging.info('[getrss] neo-cli rss: {0}KiB'.format(mem))
+    #check block count
     localBlockCount = getLocalBlockCount()
     bestBlockCount = getBestBlockCount()
     if localBlockCount < 0 or bestBlockCount < 0:
@@ -79,5 +89,5 @@ while True:
         continue
     if RESTART_THRESHOLD < bestBlockCount - localBlockCount and not restartRecently():
         restart_cnt += 1
-        logging.warning('[restart] restarting, restart_cnt: {0}, localheight: {1}, bestheight: {2}'.format(restart_cnt, localBlockCount, bestBlockOount))
+        logging.warning('[restart] restarting, restart_cnt: {0}, localheight: {1}, bestheight: {2}'.format(restart_cnt, localBlockCount, bestBlockCount))
         stopLocalNode()
