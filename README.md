@@ -1,7 +1,7 @@
 # neo-auto-test
 to implement neo-cli auto test
 ##preparation
-1. install python2.7.15
+1. install python2.3.7
 2. install screen
 3. install expect
 4. download neo-cli-linux
