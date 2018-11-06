@@ -1,7 +1,7 @@
 # neo-auto-test
 to implement neo-cli auto test 
 
-##preparation
+## preparation
 1. install python3.7.0
 2. install screen
 3. install expect
@@ -13,7 +13,7 @@ chmod +x ./neo-cli
 ```
 6. completely synchonize neo-cli chain data
 
-##configuration
+## configuration
 
 ```
 {
