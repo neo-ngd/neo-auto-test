@@ -17,8 +17,9 @@ START_SILENT = config['startsilent']
 #check interval(second)
 INTERVAL = config['interval']
 LOCAL_SRV = config['localsrv']
+NEO_PATH = config['neoclipath']
 
-lastRestartTimestamp = datetime.fromtimestamp(0)
+lastStartTime = datetime.now()
 restart_cnt = 0
 
 def getBestBlockCount():
@@ -53,10 +54,10 @@ def isLocalRunning():
     return True
 
 def startLocalNode():
-    result = os.system('./shell/start.sh {0}'.format(config['neoclipath']))
+    result = os.system('./shell/start.sh {0}'.format(NEO_PATH))
     if result == 0:
-        global lastRestartTimestamp 
-        lastRestartTimestamp = datetime.now()
+        global lastStartTime
+        lastStartTime = datetime.now()
         return True
     return False
 
@@ -67,11 +68,10 @@ def stopLocalNode():
     os.system('ps -ef -o pid -o comm | grep neo-cli | awk \'{print $1}\'| xargs kill')
     return True
 
-def restartRecently():
-    if timedelta(minutes=START_SILENT) < datetime.now() - lastRestartTimestamp:
-        return True
-    return False
+def restartable():
+    return timedelta(minutes=START_SILENT)  < datetime.now() - lastStartTime
 
+logging.info('[neospy] start, neo-cli: {0}, check interval: {1}, start slient: {2}, restart threshold: {3}'.format(NEO_PATH, INTERVAL, START_SILENT, RESTART_THRESHOLD))
 while True:
     if not isLocalRunning():
         startLocalNode()
@@ -87,7 +87,8 @@ while True:
     if localBlockCount < 0 or bestBlockCount < 0:
         logging.error('[wrongheight] wrong height, localheight: {0}, bestheight: {1}'.format(localBlockCount, bestBlockCount))
         continue
-    if RESTART_THRESHOLD < bestBlockCount - localBlockCount and not restartRecently():
+    logging.info("[neospy] laststarttime: {1}, restartable: {0}".format(lastStartTime, restartable()))
+    if RESTART_THRESHOLD < bestBlockCount - localBlockCount and restartable():
         restart_cnt += 1
         logging.warning('[restart] restarting, restart_cnt: {0}, localheight: {1}, bestheight: {2}'.format(restart_cnt, localBlockCount, bestBlockCount))
         stopLocalNode()
